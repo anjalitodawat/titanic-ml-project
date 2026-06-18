@@ -1,0 +1,62 @@
+
+╔══════════════════════════════════════════════════════════════╗
+║           TITANIC SURVIVAL PREDICTION — PROJECT SUMMARY      ║
+╚══════════════════════════════════════════════════════════════╝
+
+── DATASET ──────────────────────────────────────────────────────
+Train set : 891 rows, 12 columns
+Test set  : 418 rows, 11 columns
+Target    : Survived (0 = Died, 1 = Survived)
+
+── MISSING VALUES HANDLED ───────────────────────────────────────
+Age      → Filled with median (177 missing in train)
+Embarked → Filled with mode — 'S' (2 missing in train)
+Fare     → Filled with median (1 missing in test)
+Cabin    → Dropped (77% missing — too unreliable)
+
+── FEATURES ENGINEERED ──────────────────────────────────────────
+Title      → Extracted from Name (Mr, Mrs, Miss, Master, Rare)
+FamilySize → SibSp + Parch + 1
+IsAlone    → 1 if FamilySize == 1, else 0
+Fare_log   → Log transform of Fare (skew: 4.79 → 0.39)
+AgeBand    → Age grouped into Child/Teen/YoungAdult/Adult/Senior
+
+── KEY INSIGHTS FROM EDA ────────────────────────────────────────
+1. Only 38% of passengers survived
+2. Females had 74% survival rate vs 20% for males
+3. 1st class passengers survived at much higher rates
+4. Cherbourg (C) passengers had better survival rates
+5. Most passengers travelled alone (60%)
+6. Fare was heavily right-skewed — log transform applied
+
+── FEATURE IMPORTANCE (Gradient Boosting) ───────────────────────
+1. Title      → 46.4%  (engineered feature!)
+2. Fare_log   → 26.2%  (engineered feature!)
+3. Pclass     → 11.6%
+4. FamilySize →  6.7%  (engineered feature!)
+5. Sex        →  3.6%
+6. AgeBand    →  2.3%  (engineered feature!)
+
+── MODELS TRAINED ───────────────────────────────────────────────
+Logistic Regression  → 81.56%
+Random Forest        → 80.45%
+Gradient Boosting    → 83.24%
+SVM                  → 82.68%
+XGBoost              → 81.01%
+
+── TUNING ───────────────────────────────────────────────────────
+Gradient Boosting tuned with GridSearchCV (270 fits)
+Best params: learning_rate=0.1, max_depth=3,
+             min_samples_split=2, n_estimators=200
+CV Accuracy after tuning: 83.71%
+
+── ENSEMBLE ─────────────────────────────────────────────────────
+Voting Classifier (GB + RF + SVM) → 84.36% ✅ BEST MODEL
+Stacking Classifier               → 82.12%
+
+── FINAL RESULTS ────────────────────────────────────────────────
+Best Model       : Voting Classifier
+Validation Acc   : 84.36%
+Mean CV Accuracy : 83.50%
+Predictions made : 418
+Predicted survival rate: 37.3%
